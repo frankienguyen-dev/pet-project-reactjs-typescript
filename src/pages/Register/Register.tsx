@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { rules } from 'src/utils/rules';
+import { getRules } from 'src/utils/rules';
 
 interface FormData {
   email: string;
@@ -14,17 +14,18 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors }
   } = useForm<FormData>();
+
+  const rules = getRules(getValues);
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
   });
 
-  console.log('check errors: ', errors);
-
   return (
-    <div className='pt-10 lg:py-20 lg:pt-10'>
+    <div className='pt-10 lg:pb-36 lg:pt-20'>
       <div className='container'>
         <div className='grid grid-cols-1 gap-[70px] lg:grid-cols-2'>
           <div className='col-span-1'>
@@ -65,6 +66,7 @@ export default function Register() {
 
               <input
                 placeholder='Your password'
+                autoComplete='on'
                 type='password'
                 className='mt-5 w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
                 {...register('password', rules.password)}
@@ -74,8 +76,11 @@ export default function Register() {
               <input
                 placeholder='Your confirm password'
                 type='password'
+                autoComplete='on'
                 className='mt-5 w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
-                {...register('password_confirm', rules.password_confirm)}
+                {...register('password_confirm', {
+                  ...rules.password_confirm
+                })}
               />
               <div className='mt-2 min-h-[1.25rem] px-10 text-sm text-red-600'>{errors.password_confirm?.message}</div>
 

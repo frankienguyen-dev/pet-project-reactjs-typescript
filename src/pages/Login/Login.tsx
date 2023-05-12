@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function Login() {
   return (
-    <div className='pt-10 lg:py-20 lg:pt-10'>
+    <div className='pt-10 lg:pb-36 lg:pt-20'>
       <div className='container'>
         <div className='grid grid-cols-1 gap-[70px] lg:grid-cols-2'>
           <div className='col-span-1'>
@@ -20,6 +20,7 @@ export default function Login() {
 
               <input
                 placeholder='Your password'
+                autoComplete='on'
                 type='password'
                 name='password'
                 className='mt-[40px] w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
