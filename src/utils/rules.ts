@@ -1,82 +1,127 @@
-import { RegisterOptions } from 'react-hook-form';
+import { RegisterOptions, UseFormGetValues } from 'react-hook-form';
+import * as yup from 'yup';
 
 type Rules = { [key in 'email' | 'password' | 'password_confirm' | 'address' | 'phone']?: RegisterOptions };
 
-export const rules: Rules = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getRules = (getValue?: UseFormGetValues<any>): Rules => ({
   email: {
     required: {
       value: true,
-      message: 'Email la bat buoc'
+      message: 'Email is required.'
     },
     pattern: {
       value: /^\S+@\S+\.\S+$/,
-      message: 'Email khong dung dinh dang'
+      message: 'Email is contains invalid characters.'
     },
     maxLength: {
       value: 160,
-      message: 'Do dai tu 5 - 160 ki tu'
+      message: 'Email is too long or contains invalid characters.'
     },
     minLength: {
       value: 5,
-      message: 'Do dai tu 5 - 160 ki tu'
+      message: 'Email is too short or contains invalid characters.'
     }
   },
 
   address: {
     required: {
       value: true,
-      message: 'Dia chi la bat buoc'
+      message: 'Address is required.'
     },
     maxLength: {
       value: 1000,
-      message: 'Do dai tu 5 - 1000 ki tu'
+      message: 'Address is too long or contains invalid characters.'
     },
     minLength: {
       value: 5,
-      message: 'Do dai tu 5 - 1000 ki tu'
+      message: 'Address is too short or contains invalid characters.'
     }
   },
 
   phone: {
     required: {
       value: true,
-      message: 'So dien thoai la bat buoc'
+      message: 'Phone number is required.'
     },
     maxLength: {
       value: 20,
-      message: 'Do dai tu 5 - 20 ki tu'
+      message: 'Phone number is too long or contains invalid characters.'
     },
     minLength: {
       value: 5,
-      message: 'Do dai tu 5 - 20 ki tu'
+      message: 'Phone number is too short or contains invalid characters.'
     }
   },
   password: {
     required: {
       value: true,
-      message: 'Vui lòng nhập password'
+      message: 'Password is required.'
     },
     maxLength: {
       value: 160,
-      message: 'Độ dài password từ 6 đến 160 ký tự'
+      message: 'Password is too long or contains invalid characters.'
     },
     minLength: {
       value: 6,
-      message: 'Độ dài password từ 6 đến 160 ký tự'
+      message: 'Password is too short or contains invalid characters.'
     }
   },
   password_confirm: {
     required: {
       value: true,
-      message: 'Vui lòng nhập lại password'
+      message: 'Confirm password is required.'
     },
     maxLength: {
       value: 160,
-      message: 'Độ dài password từ 6 đến 160 ký tự'
+      message: 'Confirm password is too long or contains invalid characters.'
     },
     minLength: {
       value: 6,
-      message: 'Độ dài password từ 6 đến 160 ký tự'
-    }
+      message: 'Confirm password is too short or contains invalid characters.'
+    },
+    validate:
+      typeof getValue === 'function'
+        ? (value) => value === getValue('password') || 'Confirm password do not match.'
+        : undefined
   }
+});
+
+const handleCofirmPasswordYup = (refString: string) => {
+  return yup
+    .string()
+    .required('Confirm password is required.')
+    .max(160, 'Confirm password is too long or contains invalid characters.')
+    .min(6, 'Confirm password is too short or contains invalid characters.')
+    .oneOf([yup.ref(refString)], 'Confirm password do not match.');
 };
+
+export const schema = yup.object({
+  email: yup
+    .string()
+    .required('Email is required.')
+    .email('Email is contains invalid characters.')
+    .max(160, 'Email is too long or contains invalid characters.')
+    .min(5, 'Email is too short or contains invalid characters.'),
+
+  address: yup
+    .string()
+    .required('Address is required.')
+    .max(1000, 'Address is too long or contains invalid characters.')
+    .min(5, 'Address is too short or contains invalid characters.'),
+
+  phone: yup
+    .string()
+    .required('Phone number is required.')
+    .max(20, 'Phone number is too long or contains invalid characters.')
+    .min(5, 'Phone number is too short or contains invalid characters.'),
+
+  password: yup
+    .string()
+    .required('Password is required.')
+    .max(160, 'Password is too long or contains invalid characters.')
+    .min(6, 'Password is too short or contains invalid characters.'),
+  password_confirm: handleCofirmPasswordYup('password')
+});
+
+export type Schema = yup.InferType<typeof schema>;

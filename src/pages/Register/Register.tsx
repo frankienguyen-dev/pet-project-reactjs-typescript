@@ -1,30 +1,27 @@
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { rules } from 'src/utils/rules';
+import Input from 'src/components/Input';
+import { Schema, schema } from 'src/utils/rules';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-interface FormData {
-  email: string;
-  password: string;
-  password_confirm: string;
-  address: string;
-  phone: string;
-}
+type FormData = Schema;
 
 export default function Register() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors }
-  } = useForm<FormData>();
+  } = useForm<FormData>({
+    resolver: yupResolver(schema)
+  });
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
   });
 
-  console.log('check errors: ', errors);
-
   return (
-    <div className='pt-10 lg:py-20 lg:pt-10'>
+    <div className='pt-10 lg:pb-36 lg:pt-20'>
       <div className='container'>
         <div className='grid grid-cols-1 gap-[70px] lg:grid-cols-2'>
           <div className='col-span-1'>
@@ -36,50 +33,60 @@ export default function Register() {
           </div>
 
           <div className='col-span-1'>
-            <h1 className='text-[32px] font-semibold leading-[48px] text-black/90'>Registration</h1>
-            <form className='mt-10' onSubmit={onSubmit} noValidate>
-              <input
+            <form onSubmit={onSubmit} noValidate>
+              <h1 className='text-[32px] font-semibold leading-[48px] text-black/90'>Registration</h1>
+
+              <Input
+                className='mt-8'
+                name='email'
                 placeholder='Your e-mail address'
                 type='email'
-                className='w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
-                {...register('email', rules.email)}
+                autoComplete='on'
+                register={register}
+                errorMessage={errors.email?.message}
               />
-              <div className='mt-2 min-h-[1.25rem] px-10 text-sm text-red-600'>{errors.email?.message}</div>
 
-              <input
+              <Input
+                className='mt-2'
+                name='address'
                 placeholder='Your address'
                 type='text'
-                className='mt-5 w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
-                {...register('address', rules.address)}
+                autoComplete='on'
+                register={register}
+                errorMessage={errors.address?.message}
               />
 
-              <div className='mt-2 min-h-[1.25rem] px-10 text-sm text-red-600'>{errors.address?.message}</div>
-
-              <input
+              <Input
+                className='mt-2'
+                name='phone'
                 placeholder='Your phone number'
                 type='text'
-                className='mt-5 w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
-                {...register('phone', rules.phone)}
+                autoComplete='on'
+                register={register}
+                errorMessage={errors.phone?.message}
               />
-              <div className='mt-2 min-h-[1.25rem] px-10 text-sm text-red-600'>{errors.phone?.message}</div>
 
-              <input
+              <Input
+                className='mt-2'
+                name='password'
                 placeholder='Your password'
                 type='password'
-                className='mt-5 w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
-                {...register('password', rules.password)}
+                register={register}
+                autoComplete='on'
+                errorMessage={errors.password?.message}
               />
-              <div className='mt-2 min-h-[1.25rem] px-10 text-sm text-red-600'>{errors.password?.message}</div>
 
-              <input
+              <Input
+                className='mt-2'
+                name='password_confirm'
                 placeholder='Your confirm password'
                 type='password'
-                className='mt-5 w-full rounded-[60px] bg-[#F0F0F0]/50 px-9 py-6 outline-none'
-                {...register('password_confirm', rules.password_confirm)}
+                register={register}
+                autoComplete='on'
+                errorMessage={errors.password_confirm?.message}
               />
-              <div className='mt-2 min-h-[1.25rem] px-10 text-sm text-red-600'>{errors.password_confirm?.message}</div>
 
-              <div className='mt-8'>
+              <div className='mt-5'>
                 <button
                   type='submit'
                   className='flex w-full items-center justify-center rounded-[60px] border-none
