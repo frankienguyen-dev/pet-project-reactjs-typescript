@@ -17,7 +17,7 @@ export default function Register() {
   });
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
+    console.log('checkdata: ', data);
   });
 
   return (
