@@ -6,6 +6,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from '@tanstack/react-query';
 import { registerAccount } from 'src/apis/auth.api';
 import { omit } from 'lodash';
+import { isAxiosUnprocessableEntity } from 'src/utils/utils';
+import { ResponseApi } from 'src/types/utils.type';
 
 type FormData = Schema;
 
@@ -13,7 +15,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    getValues,
+    setError,
     formState: { errors }
   } = useForm<FormData>({
     resolver: yupResolver(schema)
@@ -30,6 +32,33 @@ export default function Register() {
     registerAccountMutation.mutate(body, {
       onSuccess: (data) => {
         console.log('check data register:', data);
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntity<ResponseApi<Omit<FormData, 'password_confirm'>>>(error)) {
+          const formError = error.response?.data.data;
+
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              setError(key as keyof Omit<FormData, 'password_confirm'>, {
+                message: formError[key as keyof Omit<FormData, 'password_confirm'>],
+                type: 'Server'
+              });
+            });
+          }
+          // if (formError?.email) {
+          //   setError('email', {
+          //     message: formError.email,
+          //     type: 'Server'
+          //   });
+          // }
+
+          // if (formError?.password) {
+          //   setError('password', {
+          //     message: formError.password,
+          //     type: 'Server'
+          //   });
+          // }
+        }
       }
     });
   });
