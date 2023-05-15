@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import Input from 'src/components/Input';
 import { Schema, schema } from 'src/utils/rules';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation } from '@tanstack/react-query';
+import { registerAccount } from 'src/apis/auth.api';
+import { omit } from 'lodash';
 
 type FormData = Schema;
 
@@ -16,8 +19,19 @@ export default function Register() {
     resolver: yupResolver(schema)
   });
 
+  const registerAccountMutation = useMutation({
+    mutationFn: (body: Omit<FormData, 'password_confirm'>) => {
+      return registerAccount(body);
+    }
+  });
+
   const onSubmit = handleSubmit((data) => {
-    console.log('checkdata: ', data);
+    const body = omit(data, ['password_confirm']);
+    registerAccountMutation.mutate(body, {
+      onSuccess: (data) => {
+        console.log('check data register:', data);
+      }
+    });
   });
 
   return (
@@ -34,7 +48,9 @@ export default function Register() {
 
           <div className='col-span-1'>
             <form onSubmit={onSubmit} noValidate>
-              <h1 className='text-[32px] font-semibold leading-[48px] text-black/90'>Registration</h1>
+              <h1 className='text-[32px] font-semibold leading-[48px] text-black/90'>
+                Registration
+              </h1>
 
               <Input
                 className='mt-8'
